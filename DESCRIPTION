@@ -1,0 +1,18 @@
+Package: SpatialDengue
+Title: Fits and simulates a spatial model of the vector-borne disease dengue
+Version: 0.0.0.9000
+Authors@R: person("Oliver", "Brady",, email = "oliver.brady@lshtm.ac.uk", c("aut", "cre"))
+Description: What the package does (one paragraph).
+Depends: R (>= 3.3.3)
+Imports: 
+    raster, 
+    geosphere, 
+    mgcv, 
+    pROC, 
+    automap, 
+    ape, 
+    snowfall,
+License: GPL
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
