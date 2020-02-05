@@ -19,7 +19,7 @@
 #' stim <- stim.generate(sgdat, sero, startweek, unipix)
 #' plot.state(stim, sgpop, unipix)
 
-stim.generate <- function(pastdat, sero, startweek, unipix){
+stim.generate <- function(pastdat, sero, startweek, sgpop, unipix){
   # trim case data to just before the startweek of the model simulation
   sgpast <- pastdat[pastdat$Week < startweek, ]
   # aggregate all past cases by each patch
