@@ -134,9 +134,9 @@ DEN.spatial.ensemble <- function(weekdates,
   }
   names(rtnlist) = sapply(qtiles, function(x) paste("Q_", x, sep = ""))
   # plotting
-  plot(rtnlist$Q_0.5$newD, type = "l", ylim = c(0, max(rtnlist$Q_0.95$newD)),
+  plot(rtnlist$Q_0.5$newD, type = "l", ylim = c(0, max(rtnlist$Q_0.975$newD)),
        xlab = "Days", ylab = "Cases per day")
-  polygon(c(1:steprun, steprun:1), c(rtnlist$Q_0.95$newD, rev(rtnlist$Q_0.05$newD)),
+  polygon(c(1:steprun, steprun:1), c(rtnlist$Q_0.975$newD, rev(rtnlist$Q_0.025$newD)),
           col = rgb(0,0,1,0.5))
   polygon(c(1:steprun, steprun:1), c(rtnlist$Q_0.75$newD, rev(rtnlist$Q_0.25$newD)),
           col = rgb(0,0,1,0.8))
