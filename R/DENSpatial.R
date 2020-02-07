@@ -185,7 +185,7 @@ DEN.spatial <- function(weekdates,
 
   ## Setting up human model compartments
   # humans - susceptible, infectious, Recovered, Recovered temporary (drugs)
-  sing_S = unipix$pop
+  sing_S = round(unipix$pop, 0)
   sing_I = matrix(0, ncol = nrow(unipix), nrow = 15)
   sing_R = rep(0, nrow(unipix))
   sing_Rt = sing_Rt = matrix(0, nrow = 40, ncol = nrow(unipix)) # 40 day maximum effect of prophylactics
