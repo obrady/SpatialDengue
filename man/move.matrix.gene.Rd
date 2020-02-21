@@ -9,7 +9,7 @@ move.matrix.gene(unipix, hometime, type = "radiation")
 \arguments{
 \item{unipix}{Universal pixel lookup table, see ?make.unipix}
 
-\item{hometime}{The proportion of time people spend in their home patch (between 0 and 1)}
+\item{hometime}{Parameter that controls the spatial concentration of movement}
 
 \item{type}{Human movement model type. Choose from  "radiation", "gravity" or "exponential"}
 }
