@@ -20,7 +20,7 @@ case.backtrack.time(casedat, startweek, unipix, stim, betaEnv, mospdeath,
 
 \item{mospdeath}{single value between 0 and 1, the daily probability of mosquito mortality}
 
-\item{hometime}{Proportion of time humans spend in their home patch vs elsewhere, must be in range 0 to 1, defaults to 0.2}
+\item{hometime}{Paramter that controls the spatial concentration of movement, defaults to 0.2}
 }
 \description{
 Generates the starting values for each of the model states given reported cases at time = 0
