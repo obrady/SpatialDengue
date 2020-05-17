@@ -9,11 +9,13 @@
 #' @export
 #' @examples
 #' data(sgdat)
-#' seromedian <- 0.659
-#' serolow <- 0.577
-#' serohigh <- 0.814
+#' data(sgpop)
+#' sgpop <- pop.process(sgpop, agg = 10)
+#' unipix <- make.unipix(sgpop)
+#' sgdat <- data.frame(sgdat, patchID = apply(cbind(sgdat[, 3:2]), 1, pix.id.find, unipix))
+#' sero <- c(0.577, 0.659, 0.814)
 #' startweek <- 40
-#' stim <- Stim.generate(sgdat, seromedian, serolow, serohigh, startweek)
+#' stim <- stim.generate(sgdat, sero, startweek, sgpop, unipix)
 #' plot.state(stim)
 
 
