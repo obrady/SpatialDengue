@@ -15,7 +15,7 @@
 #' sgdat <- data.frame(sgdat, patchID = apply(cbind(sgdat[, 3:2]), 1, pix.id.find, unipix))
 #' sero <- c(0.577, 0.659, 0.814)
 #' startweek <- 40
-#' stim <- stim.generate(sgdat, sero, startweek, unipix)
+#' stim <- stim.generate(sgdat, sero, startweek, sgpop, unipix)
 #' par(mfrow = c(2, 1))
 #' plot.state(stim, sgpop, unipix)
 #' betaEnv <- betaEnv.generate(bmean = 8, bcorrelation = -1, stim, unipix)
