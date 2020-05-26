@@ -4,6 +4,7 @@
 #' @param weekdates Two element vector of the start and end weeks of the simulation over which the model will be evaluated over
 #' @param fitdat Data frame of the locations, numbers and timings (in weeks) of cases to fit the model to, see ?sgdat
 #' @param pastdat Data frame of the locations, numbers and timings (in weeks) of all cases in the dataset (is used to generate the starting immunity profile), see ?sgdat
+#' @param sgpop Raster containing the number of people residing in each patch, see ?sgpop
 #' @param unipix Universal pixel lookup table, see ?make.unipix
 #' @param pixdistmat A patch distance matrix, see example
 #' @param steprun integer, number of days for which the simulation should run, excluding burn in period
@@ -24,7 +25,7 @@
 #' sgdat <- data.frame(sgdat, patchID = apply(cbind(sgdat[, 3:2]), 1, pix.id.find, unipix))
 #' weekdates <- c(40, 92)
 #' # model run with default parameters
-#' denmod_sim <- DEN.spatial(weekdates, sgdat, sgdat, unipix, pixdistmat, 365)
+#' denmod_sim <- DEN.spatial(weekdates, sgdat, sgdat, sgpop, unipix, pixdistmat, 365)
 #' # model run with reactive drug deployment
 #' drugtreat = data.frame(EffCoverage = 0.9, Duration = 30, Radius = 1000, Delay = 0)
 #' denmod_sim_drugs <- DEN.spatial(weekdates, sgdat, unipix, pixdistmat, 365, paramsList = list(drugtreat = drugtreat))
@@ -34,6 +35,7 @@
 DEN.spatial <- function(weekdates,
                         fitdat,
                         pastdat,
+                        sgpop,
                         unipix,
                         pixdistmat,
                         steprun,
@@ -107,7 +109,7 @@ DEN.spatial <- function(weekdates,
   mospdeath = paramsList$mospdeath
 
   if(!("stim" %in% names(paramsList))){
-    paramsList = c(stim = list(stim.generate(pastdat, c(0.577, 0.659, 0.814), weekdates[1], unipix)),
+    paramsList = c(stim = list(stim.generate(pastdat, c(0.577, 0.659, 0.814), weekdates[1], sgpop, unipix)),
                    paramsList)
   }
   stim = paramsList$stim
@@ -116,7 +118,7 @@ DEN.spatial <- function(weekdates,
     bmean = sampams$betaEnv_mean
     bcorrelation = sampams$betaEnv_cor
     paramsList = c(betaEnv = list(betaEnv.generate(bmean = bmean, bcorrelation = bcorrelation,
-                                                   stim.generate(pastdat, c(0.577, 0.659, 0.814), weekdates[1], unipix),
+                                                   stim.generate(pastdat, c(0.577, 0.659, 0.814), weekdates[1], sgpop, unipix),
                                                    unipix)),
                    paramsList)
   }
