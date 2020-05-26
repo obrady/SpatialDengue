@@ -18,11 +18,11 @@
 #' stim <- stim.generate(sgdat, sero, startweek, sgpop, unipix)
 #' par(mfrow = c(2, 1))
 #' plot.state(stim, sgpop, unipix)
-#' betaEnv <- betaEnv.generate(bmean = 8, bcorrelation = -1, stim, unipix)
+#' betaEnv <- betaEnv.generate(bmean = 8, bcorrelation = -1, stim)
 #' plot.state(betaEnv, sgpop, unipix)
 
 
-betaEnv.generate <- function(bmean, bcorrelation, stim, unipix){
+betaEnv.generate <- function(bmean, bcorrelation, stim){
   # assume sd of stim = sd of betaEnv
   # function for generating vector of correlated values
   correlatedValue = function(x, r){
