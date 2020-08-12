@@ -330,7 +330,7 @@ DEN.spatial <- function(weekdates,
           if(!all(is.na(treatlog_drug[[scheduleday]]))){
             humDrugTreatProbLocal[treatlog_drug[[scheduleday]]] <- drugtreat_Eff
           }
-        }
+        } else{treatlog_drug[[i]] = NA}
       }else{treatlog_drug[[i]] = NA}
 
       # Vector control
@@ -344,7 +344,7 @@ DEN.spatial <- function(weekdates,
           if(!all(is.na(treatlog_vec[[scheduleday]]))){
             mosDeathProbLocal[treatlog_vec[[scheduleday]]] <- vectreat_Eff
           }
-        }
+        } else{treatlog_vec[[i]] = NA}
       }else{treatlog_vec[[i]] = NA}
     }else{
       Dspots1 = NA
