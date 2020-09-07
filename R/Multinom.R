@@ -16,6 +16,10 @@ multinom <- function(x, type){
   if(type == "mos_E"){
     # Infected mosquitoes
     newmosE = apply(cbind(x[[1]][[1]], x[[1]][[2]]), 1, function(u) rbinom(1, u[1], u[2]))
+                    
+    for (i in 1:length(newmosE)){
+      newmosE[[i]] = ifelse(is.na(newmosE[[i]]), 0, newmosE[[i]]) }           
+                    
     # order randomization of out compartments
     ord <- sample(1:3, 3)
     ord2 <- data.frame(name = c("EIP", "natdeath", "cdeath"), orignum = 1:3, newnum = ord)
@@ -70,10 +74,19 @@ multinom <- function(x, type){
     # if drugs are not in play, omit the sampling- quicker
     if(sum(x[[2]][[2]]) > 0){
       for(k in 1:2){
-        if(ord2[k, 3] == 1){newhumI <- apply(cbind(sing_Ss, x[[1]][[2]]), 1, function(u) rbinom(1, u[1], u[2])); sing_Ss = sing_Ss - newhumI}
-        if(ord2[k, 3] == 2){newhumRt <- apply(cbind(sing_Ss, x[[2]][[2]]), 1, function(u) rbinom(1, u[1], u[2])); sing_Ss = sing_Ss - newhumRt}
+        if(ord2[k, 3] == 1){newhumI <- apply(cbind(sing_Ss, x[[1]][[2]]), 1, function(u) rbinom(1, u[1], u[2])); 
+           for (i in 1:length(newhumI)){
+          newhumI[[i]] = ifelse(is.na(newhumI[[i]]), 0, newhumI[[i]])};
+            sing_Ss = sing_Ss - newhumI}
+        if(ord2[k, 3] == 2){newhumRt <- apply(cbind(sing_Ss, x[[2]][[2]]), 1, function(u) rbinom(1, u[1], u[2])); 
+           for (i in 1:length(newhumI)){
+          newhumI[[i]] = ifelse(is.na(newhumI[[i]]), 0, newhumI[[i]])};
+                                              sing_Ss = sing_Ss - newhumRt}
       }
-    }else{newhumI <- apply(cbind(x[[1]][[1]], x[[1]][[2]]), 1, function(u) rbinom(1, u[1], u[2]));newhumRt = rep(0, length(x[[1]][[2]]))}
+    }else{newhumI <- apply(cbind(x[[1]][[1]], x[[1]][[2]]), 1, function(u) rbinom(1, u[1], u[2]));
+           for (i in 1:length(newhumI)){
+          newhumI[[i]] = ifelse(is.na(newhumI[[i]]), 0, newhumI[[i]])};
+                           newhumRt = rep(0, length(x[[1]][[2]]))}
     
     rtnlist  = list(newhumS, newhumI, newhumRt)
     names(rtnlist) = c("newhumS", "newhumI", "newhumRt")
