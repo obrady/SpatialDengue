@@ -34,14 +34,20 @@ betaEnv.generate <- function(bmean, bcorrelation, stim){
     return(y)
   }
   
-  # Z scores of starting immunity
+ if (sd(stim)==0){
+    
+     betaEnv =  rep(bmean, length(stim))
+
+  } else{ 
+  
+   # Z scores of starting immunity
   stim_Zscore = (stim - mean(stim)) / sd(stim)
   
   # calculate correlated betaEnv Z scores
   betaEnv_Zscore = correlatedValue(x=stim_Zscore, r=bcorrelation)
   
   # and back to original scale
-  betaEnv = betaEnv_Zscore * sd(stim) + bmean
+  betaEnv = betaEnv_Zscore * sd(stim) + bmean }
   
   # scaling for below 0 values
   if(any(betaEnv < 0)){
