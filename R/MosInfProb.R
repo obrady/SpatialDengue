@@ -20,7 +20,7 @@
 #' sero <- c(0.577, 0.659, 0.814)
 #' startweek <- 40
 #' stim <- stim.generate(sgdat, sero, startweek, unipix)
-#' betaEnv <- betaEnv.generate(bmean = 8, blogvariance = log(2), bcorrelation = -1, stim, unipix)
+#' betaEnv <- betaEnv.generate(bmean = 8, blogvariance = log(2), bcorrelation = -1, stim)
 #' sing_I <- matrix(runif(15 * nrow(unipix), min = 0, max = 20), nrow = 15)
 #' mlist <- move.matrix.gene(unipix, hometime = 0.2)
 #' MIP <- mos.inf.prob(sing_I, betaEnv, unipix, mlist[[1]], mlist[[2]])

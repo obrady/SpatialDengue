@@ -21,7 +21,7 @@
 #' sero <- c(0.577, 0.659, 0.814)
 #' startweek <- 40
 #' stim <- stim.generate(sgdat, sero, startweek, unipix)
-#' betaEnv <- betaEnv.generate(bmean = 8, blogvariance = log(2), bcorrelation = -1, stim, unipix)
+#' betaEnv <- betaEnv.generate(bmean = 8, blogvariance = log(2), bcorrelation = -1, stim)
 #' mospdeath <- 0.1
 #' startTable <- case.backtrack.time(sgdat, startweek, unipix, stim, betaEnv, mospdeath, hometime = 0.5)
 

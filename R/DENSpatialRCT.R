@@ -119,8 +119,7 @@ DEN.spatial.RCT <- function(weekdates,
       bmean = sample(finalWeights$BetaEnv_mean[, 1], 1, prob = finalWeights$BetaEnv_mean[, 2])
       bcorrelation = sample(finalWeights$BetaEnv_cor[, 1], 1, prob = finalWeights$BetaEnv_cor[, 2])
       paramsList = c(betaEnv = list(betaEnv.generate(bmean = bmean, bcorrelation = bcorrelation, 
-                                                     stim.generate(pastdat, c(0.577, 0.659, 0.814), weekdates[1], unipix), 
-                                                     unipix)), 
+                                                     stim.generate(pastdat, c(0.577, 0.659, 0.814)))), 
                      paramsList)
     }
     betaEnv = paramsList$betaEnv

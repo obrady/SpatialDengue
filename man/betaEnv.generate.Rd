@@ -11,7 +11,7 @@ betaEnv.generate(bmean, bcorrelation, stim)
 
 \item{bcorrelation}{the degree of correlation between human susceptibility and human <-> vector contact rate, must be in interval -1 to 1}
 
-\item{unipix}{Universal pixel lookup table, see ?make.unipix}
+\item{stim}{a vector of the starting immunity levels in each pixel}
 }
 \description{
 Generates a continuous landscape of human <-> vector contact rates given parameters of mean and variance of contact rate and the degree of spatial correlation with susceptibility

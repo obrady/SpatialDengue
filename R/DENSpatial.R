@@ -118,8 +118,7 @@ DEN.spatial <- function(weekdates,
     bmean = sampams$betaEnv_mean
     bcorrelation = sampams$betaEnv_cor
     paramsList = c(betaEnv = list(betaEnv.generate(bmean = bmean, bcorrelation = bcorrelation,
-                                                   stim = paramsList$stim,
-                                                   unipix)),
+                                                   stim = paramsList$stim)),
                    paramsList)
   }
   betaEnv = paramsList$betaEnv

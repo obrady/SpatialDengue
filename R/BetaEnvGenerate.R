@@ -3,7 +3,7 @@
 #' Generates a continuous landscape of human <-> vector contact rates given parameters of mean and variance of contact rate and the degree of spatial correlation with susceptibility
 #' @param bmean the mean human <-> vector contact rate across the landscape
 #' @param bcorrelation the degree of correlation between human susceptibility and human <-> vector contact rate, must be in interval -1 to 1
-#' @param unipix Universal pixel lookup table, see ?make.unipix
+#' @param stim a vector of the starting immunity levels in each pixel
 #' @details Between the three supplied parameters this controls the intensity of transmission, its spatial variability and its spatial structure (in particularlly whether transmission intensity is most intense in areas that have experience recent transmission, or areas that have not experience recent transmission), i.e. does the outbreak happen in a new area or an existign area of high intensity transmission? The implementation is stochastic and an approximation.
 #' @keywords contact rate mosquito human
 #' @export

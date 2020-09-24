@@ -136,8 +136,7 @@ DEN.spatial.seasonal <- function(weekdates,
     bmean = bmean_1 * (seasonal_vector[seasonal_start])
     bmean = ifelse(bmean < 0.1, 0.1, bmean)
    betaEnv = betaEnv.generate(bmean = bmean, bcorrelation = bcorrelation,
-                                                   stim = stim,
-                                                   unipix)
+                                                   stim = stim)
   #print(paste0("first=", mean(betaEnv)))
 
   if(!("drugtreat" %in% names(paramsList))){
@@ -331,8 +330,7 @@ DEN.spatial.seasonal <- function(weekdates,
     bmean = bmean_1 * seasonal_vector[seasonal_start + t]
     # bmean = ifelse(bmean < 0.005, 0.005, bmean)
    betaEnv = betaEnv.generate(bmean = bmean, bcorrelation = bcorrelation,
-                                                   stim = stim,
-                                                   unipix)
+                                                   stim = stim)
    #print(paste0("2nd=", mean(betaEnv)))
    
     
@@ -345,8 +343,7 @@ DEN.spatial.seasonal <- function(weekdates,
       bmean = bmean_1 * seasonal_vector[t]
       # bmean = ifelse(bmean < 0.005, 0.005, bmean)
       betaEnv = betaEnv.generate(bmean = bmean, bcorrelation = bcorrelation,
-                                 stim = stim,
-                                 unipix = unipix)
+                                 stim = stim)
       
       #print(paste0("3rd=", mean(betaEnv)))
     }
