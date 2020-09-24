@@ -108,8 +108,9 @@ DEN.spatial <- function(weekdates,
   }
   mospdeath = paramsList$mospdeath
 
+  
   if(!("stim" %in% names(paramsList))){
-    paramsList = c(stim = list(stim.generate(pastdat, c(0.577, 0.659, 0.814), weekdates[1], sgpop, unipix)),
+    paramsList = c(stim = list(as.vector(sero)[unipix$pixID]),
                    paramsList)
   }
   stim = paramsList$stim
@@ -366,7 +367,7 @@ DEN.spatial <- function(weekdates,
     # MOSQUITO
     #(S never changes so not here)
     # mos E
-    mos_E_IO <- multinom(list(list(mos_S, mosInfProb),
+    mos_E_IO <- SpatialDengue::multinom(list(list(mos_S, mosInfProb),
                               list(mos_E, func_EIP),
                               list(mos_E,  mospdeath),
                               list(mos_E, mosDeathProbLocal)),
@@ -378,14 +379,14 @@ DEN.spatial <- function(weekdates,
     mos_E = transition(base = mos_E,  plus = mos_E_IO[[1]], minus = (mos_E_IO[[2]] + mos_E_IO[[3]] + mos_E_IO[[4]]))
 
     # mos_I
-    mos_I_O <- multinom(list(list(mos_I,  mospdeath),
+    mos_I_O <- SpatialDengue::multinom(list(list(mos_I,  mospdeath),
                              list(mos_I, mosDeathProbLocal)),
                         type = "mos_I")
     mos_I = mos_I + colSums(mos_E_IO[[2]]) - mos_I_O[[1]] - mos_I_O[[2]] + extraMosE_I
 
     # HUMAN
     # sing_S
-    sing_S_IO <- multinom(list(list(sing_S, humInfProb),
+    sing_S_IO <- SpatialDengue::multinom(list(list(sing_S, humInfProb),
                                list(sing_S, humDrugTreatProbLocal),
                                list(sing_Rt,  function(times) pnorm(times, drugtreat_Dur, 0))),
                           type = "sing_S")

@@ -4,7 +4,7 @@
 \alias{plot.state}
 \title{Plots a map of a given model compartment state}
 \usage{
-\method{plot}{state}(state, examras, unipix, main = NULL)
+plot.state(state, examras, unipix, main = NULL)
 }
 \arguments{
 \item{state}{Matrix or vector of a model state, e.g. S, I or R}

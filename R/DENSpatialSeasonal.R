@@ -52,7 +52,7 @@ DEN.spatial.seasonal <- function(weekdates,
   data(finalWeights)
   # presample parameters
   # if some parameters available, then adjust weighting to preferentially select complementary parameter values
-  pamnames = c("hometime", "pdetec", "mospdeath", "betaEnv_mean","Mov_model_type")
+  pamnames = c("hometime", "pdetec", "mospdeath", "betaEnv_mean", "betaEnv_cor", "Mov_model_type")
   apams <- pamnames %in% names(paramsList)
 
   if(any(apams) & (sum(apams) != length(apams))){
@@ -60,18 +60,7 @@ DEN.spatial.seasonal <- function(weekdates,
     for(i in 1:length(apams)){
       if(apams[i]){
         fname = pamnames[i]
-        # weighting proportional to absolute deviation
-        if(fname == "betaEnv_mean"){
-          val1 = sqrt((finalWeights$betaEnv_mean - paramsList$betaEnv_mean)^2)
-          val1 = val1 / max(val1)
-          #val2 = sqrt((finalWeights$betaEnv_var - var(paramsList$betaEnv))^2)
-          #val2 = val2 / max(val2)
-
-          Aweights = cbind(Aweights, val1)
-          #Aweights = cbind(Aweights, val2)
-        }else{
-          Aweights[, i] = unlist(1 - sqrt((finalWeights[names(finalWeights) == fname] - paramsList[names(paramsList) == pamnames[i]])^2))
-        }
+        Aweights[, i] = unlist(1 - sqrt((finalWeights[names(finalWeights) == fname] - paramsList[names(paramsList) == pamnames[i]])^2))
       }
     }
     Aweights = Aweights[, colSums(Aweights) != 0]
@@ -113,32 +102,41 @@ DEN.spatial.seasonal <- function(weekdates,
   mospdeath = paramsList$mospdeath
 
   if(!("stim" %in% names(paramsList))){
-    paramsList = c(stim = list(stim.generate(pastdat, c(0.577, 0.659, 0.814), weekdates[1], sgpop, unipix)),
+    paramsList = c(stim = list(as.vector(sero)[unipix$pixID]),
                    paramsList)
   }
   stim = paramsList$stim
   #print(paste0("stim=", mean(stim)))
-
+  
   if(!("betaEnv_mean" %in% names(paramsList))){
-    paramsList = c(betaEnv_mean = sampams$betaEnv_mean, paramsList) 
+    bmean_1 = sampams$betaEnv_mean
   }
-  
-  bmean_1 = paramsList$betaEnv_mean
-  
   if(!("betaEnv_cor" %in% names(paramsList))){
-    bcorrelation = c(bcorrelation = sampams$betaEnv_cor, paramsList)
+    bcorrelation = sampams$betaEnv_cor
   }
   
-  bcorrelation = paramsList$betaEnv_cor
+  # check to make sure user only specifies postiive numbers in seasonal_vector
+  if(any(seasonal_vector < 0)){
+    print("warning, negatives in seasonal_vector converted to 0")
+    seasonal_vector[seasonal_vector < 0] = 0
+  }
+  if(seasonal_start < 1){
+    print("warning, seasonal start must be greater than 0, setting to 1")
+    seasonal_start = 1
+  }
+  # scale seasonal vector so the mean of seasonal_vector = bmean
+  # need to also include the effect of the minimum floor in this calculation (increases mean)
+  seasonal_vector <- seasonal_vector / mean(ifelse(seasonal_vector * bmean_1 < 0.1, 0.1, seasonal_vector * bmean_1) / bmean_1)
+  bmean = bmean_1 * (seasonal_vector[seasonal_start])
+  # provide a minimum floor to bmean to avoid extinction
+  bmean = ifelse(bmean < 0.1, 0.1, bmean)
+  betaEnv = betaEnv.generate(bmean = bmean, bcorrelation = bcorrelation,
+                             stim = stim)
+  paramsList = c(betaEnv, paramsList)
   
-  # 
-  # if(!("betaEnv" %in% names(paramsList))){
-    bmean = bmean_1 * (seasonal_vector[seasonal_start])
-    bmean = ifelse(bmean < 0.1, 0.1, bmean)
-   betaEnv = betaEnv.generate(bmean = bmean, bcorrelation = bcorrelation,
-                                                   stim = stim)
-  #print(paste0("first=", mean(betaEnv)))
-
+  
+  
+  
   if(!("drugtreat" %in% names(paramsList))){
     paramsList = c(drugtreat = list(data.frame(EffCoverage = 0,
                                                Duration = 0,
@@ -325,7 +323,7 @@ DEN.spatial.seasonal <- function(weekdates,
 
     #calculate new beta at each stage
     
-    if ((i + seasonal_start) <= 365){
+    if ((i + seasonal_start) <= length(seasonal_vector)){
       t = i
     bmean = bmean_1 * seasonal_vector[seasonal_start + t]
     # bmean = ifelse(bmean < 0.005, 0.005, bmean)
@@ -336,10 +334,10 @@ DEN.spatial.seasonal <- function(weekdates,
     
     }
     
-    if ((i + seasonal_start) > 365) {
+    if ((i + seasonal_start) > length(seasonal_vector)) {
       t3 = i + seasonal_start
-      t2 = trunc(t3 /365, 0)
-      t = t3 - (t2*365)
+      t2 = trunc(t3 /length(seasonal_vector), 0)
+      t = t3 - (t2*length(seasonal_vector))
       bmean = bmean_1 * seasonal_vector[t]
       # bmean = ifelse(bmean < 0.005, 0.005, bmean)
       betaEnv = betaEnv.generate(bmean = bmean, bcorrelation = bcorrelation,
@@ -445,11 +443,11 @@ DEN.spatial.seasonal <- function(weekdates,
     }
     
     
-     mos_E_IO <- multinom(list(list(mos_S, mosInfProb),
-                              list(mos_E, func_EIP),
-                              list(mos_E,  mospdeath),
-                              list(mos_E, mosDeathProbLocal)),
-                         type = "mos_E")
+     mos_E_IO <- SpatialDengue::multinom(list(list(mos_S, mosInfProb),
+                                         list(mos_E, func_EIP),
+                                         list(mos_E,  mospdeath),
+                                         list(mos_E, mosDeathProbLocal)),
+                                         type = "mos_E")
     #mos_E = mos_E + mos_E_IO[[1]] - mos_E_IO[[2]] - mos_E_IO[[3]] - mos_E_IO[[4]]
     # extras includes those that reach the end of the holding vector but havent completes EIP or dies
     # (so we automatically advance them to the next state)
@@ -462,7 +460,7 @@ DEN.spatial.seasonal <- function(weekdates,
     #print(paste0("mos_E_IO[[4]]=", sum(mos_E_IO[[4]])))
     
     # mos_I
-    mos_I_O <- multinom(list(list(mos_I,  mospdeath),
+    mos_I_O <- SpatialDengue::multinom(list(list(mos_I,  mospdeath),
                              list(mos_I, mosDeathProbLocal)),
                         type = "mos_I")
     mos_I = mos_I + colSums(mos_E_IO[[2]]) - mos_I_O[[1]] - mos_I_O[[2]] + extraMosE_I
@@ -474,7 +472,7 @@ DEN.spatial.seasonal <- function(weekdates,
     
         # HUMAN
     # sing_S
-    sing_S_IO <- multinom(list(list(sing_S, humInfProb),
+    sing_S_IO <- SpatialDengue::multinom(list(list(sing_S, humInfProb),
                                list(sing_S, humDrugTreatProbLocal),
                                list(sing_Rt,  function(times) pnorm(times, drugtreat_Dur, 0))),
                           type = "sing_S")
