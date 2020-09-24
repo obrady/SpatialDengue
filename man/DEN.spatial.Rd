@@ -4,7 +4,7 @@
 \alias{DEN.spatial}
 \title{Run a single realisation of the spatial dengue model}
 \usage{
-DEN.spatial(weekdates, fitdat, pastdat, unipix, pixdistmat, steprun,
+DEN.spatial(weekdates, fitdat, pastdat, sgpop, unipix, pixdistmat, steprun,
   paramsList = NULL)
 }
 \arguments{
@@ -13,6 +13,8 @@ DEN.spatial(weekdates, fitdat, pastdat, unipix, pixdistmat, steprun,
 \item{fitdat}{Data frame of the locations, numbers and timings (in weeks) of cases to fit the model to, see ?sgdat}
 
 \item{pastdat}{Data frame of the locations, numbers and timings (in weeks) of all cases in the dataset (is used to generate the starting immunity profile), see ?sgdat}
+
+\item{sgpop}{Raster containing the number of people residing in each patch, see ?sgpop}
 
 \item{unipix}{Universal pixel lookup table, see ?make.unipix}
 
@@ -41,7 +43,7 @@ pixdistmat <- distm(cbind(unipix$x, unipix$y))
 sgdat <- data.frame(sgdat, patchID = apply(cbind(sgdat[, 3:2]), 1, pix.id.find, unipix))
 weekdates <- c(40, 92)
 # model run with default parameters
-denmod_sim <- DEN.spatial(weekdates, sgdat, sgdat, unipix, pixdistmat, 365)
+denmod_sim <- DEN.spatial(weekdates, sgdat, sgdat, sgpop, unipix, pixdistmat, 365)
 # model run with reactive drug deployment
 drugtreat = data.frame(EffCoverage = 0.9, Duration = 30, Radius = 1000, Delay = 0)
 denmod_sim_drugs <- DEN.spatial(weekdates, sgdat, unipix, pixdistmat, 365, paramsList = list(drugtreat = drugtreat))

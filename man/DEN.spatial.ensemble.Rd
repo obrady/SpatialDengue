@@ -5,8 +5,8 @@
 \title{Run a multiple realisations of the spatial dengue model and ensemble them}
 \usage{
 DEN.spatial.ensemble(weekdates, fitdat, pastdat, unipix, pixdistmat,
-  steprun, nruns, qtiles = c(0.05, 0.25, 0.5, 0.75, 0.95), ncores = 1,
-  paramsList = NULL)
+  steprun, nruns, qtiles = c(0.025, 0.25, 0.5, 0.75, 0.975),
+  ncores = 1, paramsList = NULL)
 }
 \arguments{
 \item{weekdates}{Two element vector of the start and end weeks of the simulation over which the mdoel will be evaluated over}

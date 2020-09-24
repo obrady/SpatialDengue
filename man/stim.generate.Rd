@@ -4,7 +4,7 @@
 \alias{stim.generate}
 \title{Generating a baseline landscape of susceptible individuals}
 \usage{
-stim.generate(pastdat, sero, startweek, unipix)
+stim.generate(pastdat, sero, startweek, sgpop, unipix)
 }
 \arguments{
 \item{pastdat}{Data frame of the locations, numbers and timings (in weeks) of recent cases, see ?sgdat}

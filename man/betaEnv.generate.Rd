@@ -4,7 +4,7 @@
 \alias{betaEnv.generate}
 \title{Generating a baseline landscape of vector-human and human-vector contact rates}
 \usage{
-betaEnv.generate(bmean, bcorrelation, stim, unipix)
+betaEnv.generate(bmean, bcorrelation, stim)
 }
 \arguments{
 \item{bmean}{the mean human <-> vector contact rate across the landscape}
@@ -27,10 +27,10 @@ unipix <- make.unipix(sgpop)
 sgdat <- data.frame(sgdat, patchID = apply(cbind(sgdat[, 3:2]), 1, pix.id.find, unipix))
 sero <- c(0.577, 0.659, 0.814)
 startweek <- 40
-stim <- stim.generate(sgdat, sero, startweek, unipix)
+stim <- stim.generate(sgdat, sero, startweek, sgpop, unipix)
 par(mfrow = c(2, 1))
 plot.state(stim, sgpop, unipix)
-betaEnv <- betaEnv.generate(bmean = 8, bcorrelation = -1, stim, unipix)
+betaEnv <- betaEnv.generate(bmean = 8, bcorrelation = -1, stim)
 plot.state(betaEnv, sgpop, unipix)
 }
 \keyword{contact}

@@ -20,13 +20,13 @@ case.backtrack.time(casedat, startweek, unipix, stim, betaEnv, mospdeath,
 
 \item{mospdeath}{single value between 0 and 1, the daily probability of mosquito mortality}
 
-\item{hometime}{Paramter that controls the spatial concentration of movement, defaults to 0.2}
+\item{hometime}{Parameter that controls spatial concentration of movement, defaults to 0.2}
 }
 \description{
 Generates the starting values for each of the model states given reported cases at time = 0
 }
 \details{
-Uses supplied relationships to work out how many Infectious, exposed, etc are needed over time to generate the supplied reported detected human cases at t= 0. 
+Uses supplied relationships to work out how many Infectious, exposed, etc are needed over time to generate the supplied reported detected human cases at t= 0.
 These are then used for model burin.
 }
 \examples{

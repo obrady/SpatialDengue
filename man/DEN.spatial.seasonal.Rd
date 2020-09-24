@@ -4,8 +4,8 @@
 \alias{DEN.spatial.seasonal}
 \title{Run a single realisation of the spatial dengue model}
 \usage{
-DEN.spatial.seasonal(weekdates, fitdat, pastdat, unipix, pixdistmat, steprun,
-      seasonal_vector, seasonal_start, paramsList = NULL)
+DEN.spatial.seasonal(weekdates, fitdat, pastdat, sgpop, unipix, pixdistmat,
+  steprun, seasonal_vector, seasonal_start, paramsList = NULL)
 }
 \arguments{
 \item{weekdates}{Two element vector of the start and end weeks of the simulation over which the model will be evaluated over}
@@ -46,11 +46,10 @@ pixdistmat <- distm(cbind(unipix$x, unipix$y))
 sgdat <- data.frame(sgdat, patchID = apply(cbind(sgdat[, 3:2]), 1, pix.id.find, unipix))
 weekdates <- c(40, 92)
 # model run with default parameters
-denmod_sim <- DEN.spatial.seasonal(weekdates, sgdat, sgdat, unipix, pixdistmat, 365, seasonal_vector, 150)
+denmod_sim <- DEN.spatial.seasonal(weekdates, sgdat, sgdat, sgpop, unipix, pixdistmat, 365, seasonal_vector, 150)
 # model run with reactive drug deployment
 drugtreat = data.frame(EffCoverage = 0.9, Duration = 30, Radius = 1000, Delay = 0)
-denmod_sim_drugs <- DEN.spatial(weekdates, sgdat, unipix, pixdistmat, 365,
-seasonal_vector, 150, paramsList = list(drugtreat = drugtreat))
+denmod_sim_drugs <- DEN.spatial.seasonal(weekdates, sgdat, sgdat, sgpop,unipix, pixdistmat, 365, seasonal_vector, 150, paramsList = list(drugtreat = drugtreat))
 }
 \keyword{model}
 \keyword{simulation}
