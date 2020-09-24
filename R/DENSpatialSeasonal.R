@@ -110,9 +110,13 @@ DEN.spatial.seasonal <- function(weekdates,
   
   if(!("betaEnv_mean" %in% names(paramsList))){
     bmean_1 = sampams$betaEnv_mean
+  }else{
+    bmean_1 = as.numeric(paramsList$betaEnv_mean)
   }
   if(!("betaEnv_cor" %in% names(paramsList))){
     bcorrelation = sampams$betaEnv_cor
+  }else{
+    bcorrelation = as.numeric(paramsList$betaEnv_cor)
   }
   
   # check to make sure user only specifies postiive numbers in seasonal_vector
