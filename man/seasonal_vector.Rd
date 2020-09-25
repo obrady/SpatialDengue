@@ -15,6 +15,6 @@
 seasonal_vector
 }
 \description{
-Monthly incidence rate ratios of reported dengue cases in Khanh Hoa, Vietnam, between 1994 - 2003, were converetd to daily data for every day of the year.
+Monthly incidence rate ratios of reported dengue cases in Khanh Hoa province, Vietnam, between 1994 - 2013, were converetd to daily data for every day of the year.
 }
 \keyword{datasets}
