@@ -9,12 +9,12 @@
   \item{value}{number of people residing in pixel}
 }}
 \source{
-\url{http://www.worldpop.org.uk}
+\url{https://www.openstreetmap.org/#map=6/54.910/-3.432}
 }
 \usage{
 sgpop
 }
 \description{
-A dataset containing the number of people residing in each 100m x 100m pixel in the nation of Singapore, adjusted to match the UN 2015 national population totals.
+A dataset containing the number of people residing in each 100m x 100m pixel in the nation of Singapore using openstreetmap building data.
 }
 \keyword{datasets}
