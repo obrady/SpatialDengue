@@ -79,8 +79,8 @@ multinom <- function(x, type){
           newhumI[[i]] = ifelse(is.na(newhumI[[i]]), 0, newhumI[[i]])};
             sing_Ss = sing_Ss - newhumI}
         if(ord2[k, 3] == 2){newhumRt <- apply(cbind(sing_Ss, x[[2]][[2]]), 1, function(u) rbinom(1, u[1], u[2])); 
-           for (i in 1:length(newhumI)){
-          newhumI[[i]] = ifelse(is.na(newhumI[[i]]), 0, newhumI[[i]])};
+           for (i in 1:length(newhumRt)){
+          newhumRt[[i]] = ifelse(is.na(newhumRt[[i]]), 0, newhumRt[[i]])};
                                               sing_Ss = sing_Ss - newhumRt}
       }
     }else{newhumI <- apply(cbind(x[[1]][[1]], x[[1]][[2]]), 1, function(u) rbinom(1, u[1], u[2]));
