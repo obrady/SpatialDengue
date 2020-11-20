@@ -20,7 +20,7 @@ DEN.spatial.seasonal(weekdates, fitdat, pastdat, sgpop, unipix, pixdistmat,
 
 \item{steprun}{integer, number of days for which the simulation should run, excluding burn in period}
 
-\item{seasonal_vector}{A vector of multipliers to change human-mosquito contact rate, each day of the year, to account for seasonality}
+\item{seasonal_vector}{A vector of multipliers to change human-mosquito contact rate, for each day of the year, to account for seasonality}
 
 \item{seasonal_start}{Day in the year for the start of the model}
 
@@ -40,16 +40,23 @@ iii) A treatment log (of length = number of steps) detailing which patches were 
 data(sgdat)
 data(sgpop)
 data(seasonal_vector)
+data(sero)
 sgpop <- pop.process(sgpop, agg = 10)
+sero <-aggregate(sero, 10, fun = mean)
 unipix <- make.unipix(sgpop)
 pixdistmat <- distm(cbind(unipix$x, unipix$y))
 sgdat <- data.frame(sgdat, patchID = apply(cbind(sgdat[, 3:2]), 1, pix.id.find, unipix))
 weekdates <- c(40, 92)
 # model run with default parameters
-denmod_sim <- DEN.spatial.seasonal(weekdates, sgdat, sgdat, sgpop, unipix, pixdistmat, 365, seasonal_vector, 150)
-# model run with reactive drug deployment
-drugtreat = data.frame(EffCoverage = 0.9, Duration = 30, Radius = 1000, Delay = 0)
-denmod_sim_drugs <- DEN.spatial.seasonal(weekdates, sgdat, sgdat, sgpop,unipix, pixdistmat, 365, seasonal_vector, 150, paramsList = list(drugtreat = drugtreat))
+denmod_sim <- DEN.spatial.seasonal(weekdates, 
+                                   fitdat = sgdat, 
+                                   pastdat = sgdat, 
+                                   sgpop, 
+                                   unipix, 
+                                   pixdistmat, 
+                                   steprun = 365, 
+                                   seasonal_vector, 
+                                   seasonal_start = 1)
 }
 \keyword{model}
 \keyword{simulation}

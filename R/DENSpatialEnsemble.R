@@ -11,6 +11,8 @@
 #' @param qtiles vector of quantiles over which results should be summarised (one or more values between 0 and 1)
 #' @param ncores number of cpu cores to run simulations over (in parallel). Uses snowfall for parallelisation. Specify cores > 1 (default = 1) for parallel processing
 #' @param paramsList Optional parameter list. If not supplied returns to defaults, see tutorial for full parameter list, see ?model.run for full list and explanation of parameters
+#' @param seasonal Logical, whether to use the defaul DEN.spatial function or the seasonal DEN.spatial.seasonal version. If this equals TRUE please supply a seasonal vector see ?DEN.spatial.seasonal
+#' @param seasonal_vector A vector of seasonal transmission intensity. See ?DEN.spatial.seasonal
 #' @details Returns a list with each component summarising the results across multiple model runs at a given quantile, e.g. 0.95, 0.5, 0.05, etc.
 #' @keywords model simulation ensemble
 #' @export
@@ -34,7 +36,13 @@ DEN.spatial.ensemble <- function(weekdates,
                                  nruns,
                                  qtiles = c(0.025, 0.25, 0.5, 0.75, 0.975),
                                  ncores = 1,
-                                 paramsList = NULL){
+                                 paramsList = NULL,
+                                 seasonal = FALSE,
+                                 seasonal_vector = NA){
+  
+  # warning message
+  if(seasonal & all(is.na(seasonal_vector))){print("please supply a seasonal_vector")}
+  
   Smat <- matrix(NA, nrow = steprun, ncol = nruns)
   Imat <- matrix(NA, nrow = steprun, ncol = nruns)
   Rmat <- matrix(NA, nrow = steprun, ncol = nruns)
@@ -55,45 +63,103 @@ DEN.spatial.ensemble <- function(weekdates,
     sfLibrary(mgcv)
     sfLibrary(SpatialDengue)
     sfExportAll()
+    
+    # if using default parameters
     if(missing(paramsList)){
-      # wrapper function
-      tg <- function(x, weekdates, fitdat, pastdat, unipix, pixdistmat, steprun){
-        print(x)
-        return(DEN.spatial(weekdates, fitdat, pastdat, unipix, pixdistmat, steprun))
+      # if seasonal
+      if(seasonal){
+        tg <- function(x, weekdates, fitdat, pastdat, unipix, pixdistmat, steprun, seasonal_vector){
+          print(x)
+          return(DEN.spatial.seasonal(weekdates, fitdat, pastdat, sgpop, unipix, pixdistmat, steprun,
+                                      seasonal_vector = seasonal_vector,
+                                      seasonal_start = 7 * weekdates[1]))
+        }
+        
+        enmodlist <- sfLapply(as.list(1:nruns), tg,
+                              weekdates = weekdates,
+                              fitdat = fitdat,
+                              pastdat = pastdat,
+                              unipix = unipix,
+                              pixdistmat = pixdistmat,
+                              steprun = steprun,
+                              seasonal_vector = seasonal_vector)
+        sfStop()
+        
+      }else{
+        tg <- function(x, weekdates, fitdat, pastdat, unipix, pixdistmat, steprun){
+          print(x)
+          return(DEN.spatial(weekdates, fitdat, pastdat, unipix, pixdistmat, steprun))
+        }
+        
+        enmodlist <- sfLapply(as.list(1:nruns), tg,
+                              weekdates = weekdates,
+                              fitdat = fitdat,
+                              pastdat = pastdat,
+                              unipix = unipix,
+                              pixdistmat = pixdistmat,
+                              steprun = steprun)
+        sfStop()
       }
-
-      enmodlist <- sfLapply(as.list(1:nruns), tg,
-                            weekdates = weekdates,
-                            fitdat = fitdat,
-                            pastdat = pastdat,
-                            unipix = unipix,
-                            pixdistmat = pixdistmat,
-                            steprun = steprun)
-      sfStop()
-
-
+      
+      
+# if using custim parameters
     }else{
-      tg <- function(x, weekdates, fitdat, pastdat, unipix, pixdistmat, steprun, paramsList){
-        print(x)
-        return(DEN.spatial(weekdates, fitdat, pastdat, unipix, pixdistmat, steprun, paramsList))
+      
+      # if seasonal 
+      if(seasonal){
+        tg <- function(x, weekdates, fitdat, pastdat, unipix, pixdistmat, steprun, seasonal_vector, paramsList){
+          print(x)
+          return(DEN.spatial.seasonal(weekdates, fitdat, pastdat, sgpop, unipix, pixdistmat, steprun,
+                                      seasonal_vector = seasonal_vector,
+                                      seasonal_start = 7 * weekdates[1],
+                                      paramsList = paramsList))
+        }
+        
+        enmodlist <- sfLapply(as.list(1:nruns), tg,
+                              weekdates = weekdates,
+                              fitdat = fitdat,
+                              pastdat = pastdat,
+                              unipix = unipix,
+                              pixdistmat = pixdistmat,
+                              steprun = steprun,
+                              seasonal_vector = seasonal_vector,
+                              paramsList = paramsList)
+        sfStop()
+      }else{
+        tg <- function(x, weekdates, fitdat, pastdat, unipix, pixdistmat, steprun, paramsList){
+          print(x)
+          return(DEN.spatial(weekdates, fitdat, pastdat, unipix, pixdistmat, steprun, paramsList))
+        }
+        enmodlist <- sfLapply(as.list(1:nruns), tg,
+                              weekdates = weekdates,
+                              fitdat = fitdat,
+                              pastdat = pastdat,
+                              unipix = unipix,
+                              pixdistmat = pixdistmat,
+                              steprun = steprun,
+                              paramsList = paramsList)
+        sfStop()
       }
-      enmodlist <- sfLapply(as.list(1:nruns), tg,
-                            weekdates = weekdates,
-                            fitdat = fitdat,
-                            pastdat = pastdat,
-                            unipix = unipix,
-                            pixdistmat = pixdistmat,
-                            steprun = steprun,
-                            paramsList = paramsList)
-      sfStop()
+      
     }
 
   }else{
     # if not parallel:
     for(i in 1:nruns){
       if(missing(paramsList)){
-        enmodlist[[i]] <- DEN.spatial(weekdates, fitdat, pastdat, unipix, pixdistmat, steprun)
-      }else{enmodlist[[i]] <- DEN.spatial(weekdates, fitdat, pastdat, unipix, pixdistmat, steprun, paramsList)}
+        if(seasonal){
+          enmodlist[[i]] <- DEN.spatial.seasonal(weekdates, fitdat, pastdat, unipix, pixdistmat, steprun, seasonal_vector)
+        }else{
+          enmodlist[[i]] <- DEN.spatial(weekdates, fitdat, pastdat, unipix, pixdistmat, steprun)
+        }
+        
+      }else{
+        if(seasonal){
+          enmodlist[[i]] <- DEN.spatial.seasonal(weekdates, fitdat, pastdat, unipix, pixdistmat, steprun, seasonal_vector, paramsList)
+        }else{
+          enmodlist[[i]] <- DEN.spatial(weekdates, fitdat, pastdat, unipix, pixdistmat, steprun, paramsList)
+        }
+      }
     }
   }
 

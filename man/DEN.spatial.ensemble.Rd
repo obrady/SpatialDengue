@@ -6,7 +6,8 @@
 \usage{
 DEN.spatial.ensemble(weekdates, fitdat, pastdat, unipix, pixdistmat,
   steprun, nruns, qtiles = c(0.025, 0.25, 0.5, 0.75, 0.975),
-  ncores = 1, paramsList = NULL)
+  ncores = 1, paramsList = NULL, seasonal = FALSE,
+  seasonal_vector = NA)
 }
 \arguments{
 \item{weekdates}{Two element vector of the start and end weeks of the simulation over which the mdoel will be evaluated over}
@@ -28,6 +29,10 @@ DEN.spatial.ensemble(weekdates, fitdat, pastdat, unipix, pixdistmat,
 \item{ncores}{number of cpu cores to run simulations over (in parallel). Uses snowfall for parallelisation. Specify cores > 1 (default = 1) for parallel processing}
 
 \item{paramsList}{Optional parameter list. If not supplied returns to defaults, see tutorial for full parameter list, see ?model.run for full list and explanation of parameters}
+
+\item{seasonal}{Logical, whether to use the defaul DEN.spatial function or the seasonal DEN.spatial.seasonal version. If this equals TRUE please supply a seasonal vector see ?DEN.spatial.seasonal}
+
+\item{seasonal_vector}{A vector of seasonal transmission intensity. See ?DEN.spatial.seasonal}
 }
 \description{
 Runs multiple versions of DEN.spatial and calculates confidence intervals

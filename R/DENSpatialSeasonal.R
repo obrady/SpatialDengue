@@ -7,7 +7,7 @@
 #' @param unipix Universal pixel lookup table, see ?make.unipix
 #' @param pixdistmat A patch distance matrix, see example
 #' @param steprun integer, number of days for which the simulation should run, excluding burn in period
-#' @param seasonal_vector A vector of multipliers to change human-mosquito contact rate, each day of the year, to account for seasonality
+#' @param seasonal_vector A vector of multipliers to change human-mosquito contact rate, for each day of the year, to account for seasonality
 #' @param seasonal_start Day in the year for the start of the model
 #' @param paramsList Optional parameter list. If not supplied returns to defaults, see tutorial for full parameter list, see ?model.run for full list and explanation of parameters
 #' @details This function undertakes three main processes: i) fills in parameters with default options if not supplied, ii) generates a human movement matrix between patches,
@@ -21,17 +21,23 @@
 #' data(sgdat)
 #' data(sgpop)
 #' data(seasonal_vector)
+#' data(sero)
 #' sgpop <- pop.process(sgpop, agg = 10)
+#' sero <-aggregate(sero, 10, fun = mean)
 #' unipix <- make.unipix(sgpop)
 #' pixdistmat <- distm(cbind(unipix$x, unipix$y))
 #' sgdat <- data.frame(sgdat, patchID = apply(cbind(sgdat[, 3:2]), 1, pix.id.find, unipix))
 #' weekdates <- c(40, 92)
 #' # model run with default parameters
-#' denmod_sim <- DEN.spatial.seasonal(weekdates, sgdat, sgdat, sgpop, unipix, pixdistmat, 365, seasonal_vector, 150)
-#' # model run with reactive drug deployment
-#' drugtreat = data.frame(EffCoverage = 0.9, Duration = 30, Radius = 1000, Delay = 0)
-#' denmod_sim_drugs <- DEN.spatial.seasonal(weekdates, sgdat, sgdat, sgpop,unipix, pixdistmat, 365, seasonal_vector, 150, paramsList = list(drugtreat = drugtreat))
-
+#' denmod_sim <- DEN.spatial.seasonal(weekdates, 
+#'                                    fitdat = sgdat, 
+#'                                    pastdat = sgdat, 
+#'                                    sgpop, 
+#'                                    unipix, 
+#'                                    pixdistmat, 
+#'                                    steprun = 365, 
+#'                                    seasonal_vector, 
+#'                                    seasonal_start = 1)
 
 
 DEN.spatial.seasonal <- function(weekdates,
@@ -128,13 +134,20 @@ DEN.spatial.seasonal <- function(weekdates,
     print("warning, seasonal start must be greater than 0, setting to 1")
     seasonal_start = 1
   }
-  # scale seasonal vector so the mean of seasonal_vector = bmean
-  # need to also include the effect of the minimum floor in this calculation (increases mean)
-  seasonal_vector <- seasonal_vector / mean(ifelse(seasonal_vector * bmean_1 < 0.1, 0.1, seasonal_vector * bmean_1) / bmean_1)
-  bmean = bmean_1 * (seasonal_vector[seasonal_start])
-  # provide a minimum floor to bmean to avoid extinction
-  bmean = ifelse(bmean < 0.1, 0.1, bmean)
-  betaEnv = betaEnv.generate(bmean = bmean, bcorrelation = bcorrelation,
+  # process seasonal vector to be same length as steprun
+  if(length(seasonal_vector[seasonal_start:length(seasonal_vector)]) < steprun){
+    seasonal_vector = rep(seasonal_vector, ceiling(steprun / length(seasonal_vector))) # restart loop if model needs to run multiple seasons
+  }
+  # now trim to relevant time window
+  seasonal_vector = seasonal_vector[seasonal_start:(seasonal_start + steprun - 1)]
+  
+  # scale seasonal vector so the mean of seasonal_vector = 1
+  seasonal_vector = seasonal_vector / mean(seasonal_vector)
+  # now calculate full timeseries of bmean
+  bmean_ts <- bmean_1 * seasonal_vector
+  # minimum floor at 0.1 ! depricated
+  #bmean_ts[bmean_ts < 0.1] = 0.1
+  betaEnv = betaEnv.generate(bmean = mean(bmean_ts), bcorrelation = bcorrelation,
                              stim = stim)
   paramsList = c(betaEnv, paramsList)
   
@@ -193,7 +206,7 @@ DEN.spatial.seasonal <- function(weekdates,
     paramsList = c(Mov_model_type = c("exponential", "gravity", "radiation")[sampams$Mov_model_type],
                    paramsList)
   }
-  Mov_model_type = paramsList$Mov_model_type
+  Mov_model_type = c("exponential", "gravity", "radiation")[paramsList$Mov_model_type]
 
 
   ### Part 2- model set up
@@ -326,31 +339,8 @@ DEN.spatial.seasonal <- function(weekdates,
     
 
     #calculate new beta at each stage
-    
-    if ((i + seasonal_start) <= length(seasonal_vector)){
-      t = i
-    bmean = bmean_1 * seasonal_vector[seasonal_start + t]
-    # bmean = ifelse(bmean < 0.005, 0.005, bmean)
-   betaEnv = betaEnv.generate(bmean = bmean, bcorrelation = bcorrelation,
-                                                   stim = stim)
-   #print(paste0("2nd=", mean(betaEnv)))
-   
-    
-    }
-    
-    if ((i + seasonal_start) > length(seasonal_vector)) {
-      t3 = i + seasonal_start
-      t2 = trunc(t3 /length(seasonal_vector), 0)
-      t = t3 - (t2*length(seasonal_vector))
-      bmean = bmean_1 * seasonal_vector[t]
-      # bmean = ifelse(bmean < 0.005, 0.005, bmean)
-      betaEnv = betaEnv.generate(bmean = bmean, bcorrelation = bcorrelation,
-                                 stim = stim)
-      
-      #print(paste0("3rd=", mean(betaEnv)))
-    }
-  
-    
+    betaEnv = betaEnv.generate(bmean = bmean_ts[i], bcorrelation = bcorrelation,
+                               stim = stim)
     
     
     # 1A- P(mosquito infected)
