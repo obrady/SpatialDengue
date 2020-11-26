@@ -136,7 +136,7 @@ DEN.spatial.seasonal <- function(weekdates,
   }
   # process seasonal vector to be same length as steprun
   if(length(seasonal_vector[seasonal_start:length(seasonal_vector)]) < steprun){
-    seasonal_vector = rep(seasonal_vector, ceiling(steprun / length(seasonal_vector))) # restart loop if model needs to run multiple seasons
+    seasonal_vector = rep(seasonal_vector, ceiling(steprun / length(seasonal_vector[seasonal_start:length(seasonal_vector)]))) # restart loop if model needs to run multiple seasons
   }
   # now trim to relevant time window
   seasonal_vector = seasonal_vector[seasonal_start:(seasonal_start + steprun - 1)]
@@ -203,7 +203,7 @@ DEN.spatial.seasonal <- function(weekdates,
   func_EIP = paramsList$func_EIP
 
   if(!("Mov_model_type" %in% names(paramsList))){
-    paramsList = c(Mov_model_type = c("exponential", "gravity", "radiation")[sampams$Mov_model_type],
+    paramsList = c(Mov_model_type = sampams$Mov_model_type,
                    paramsList)
   }
   Mov_model_type = c("exponential", "gravity", "radiation")[paramsList$Mov_model_type]
